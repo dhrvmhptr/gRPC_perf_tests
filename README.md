@@ -27,8 +27,12 @@ $ perf script > out.perf
 ```
 then flamegraph
 ```bash
-$ ../FlameGraph/stackcollapse-perf.pl out.perf > out.folded
-$ ../FlameGraph/flamegraph.pl out.folded > kernel.svg
+$ cd ~ && git clone git@github.com:brendangregg/FlameGraph.git
+
+cd back into dir where the out.perf is located
+
+$ ~/FlameGraph/stackcollapse-perf.pl out.perf > out.folded
+$ ~/FlameGraph/flamegraph.pl out.folded > kernel.svg
 ```
 # Results
 
