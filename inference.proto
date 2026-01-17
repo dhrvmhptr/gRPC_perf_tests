@@ -1,0 +1,16 @@
+syntax="proto3";
+
+package inference;
+
+service InferenceService {
+  rpc Predict(PredictRequest) returns (PredictResponse);
+}
+
+message PredictRequest {
+  bytes input = 1; // raw bytes
+}
+
+
+message PredictResponse {
+  bytes output = 1; // fake res for now
+}
