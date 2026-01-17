@@ -1,3 +1,5 @@
 .vscode/
 build/
 protos/
+
+out.perf
