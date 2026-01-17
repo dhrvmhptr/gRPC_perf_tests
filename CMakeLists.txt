@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(GrpcInference)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 include(cmake/common.cmake)
 find_package(absl REQUIRED)
 

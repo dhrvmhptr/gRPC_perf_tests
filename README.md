@@ -33,4 +33,3 @@ $ ../FlameGraph/flamegraph.pl out.folded > kernel.svg
 # Results
 
 v1: Increasing the concurrency and rps increases latency tremendously, so need to think of multiple COs to handle the load and test again
-# gRPC_perf_tests

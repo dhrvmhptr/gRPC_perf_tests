@@ -2,4 +2,19 @@
 build/
 protos/
 
+compile_commands.json
 out.perf
+
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeScripts
+Testing
+compile_commands.json
+CTestTestfile.cmake
+_deps
+CMakeUserPresets.json

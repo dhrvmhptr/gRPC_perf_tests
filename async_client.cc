@@ -5,7 +5,6 @@
 #include "absl/flags/flag.h"
 #include "absl/flags/parse.h"
 
-using grpc::Channel;
 using grpc::ClientContext;
 using grpc::CompletionQueue;
 using grpc::Status;
@@ -15,7 +14,6 @@ using inference::PredictResponse;
 
 ABSL_FLAG(std::string, target, "hey this is a dummy input", "input to the inference server");
 
-// -> 1. update client to accept args as data to run ghz with -d payload
 int main(int argc, char **argv)
 {
   absl::ParseCommandLine(argc, argv);
