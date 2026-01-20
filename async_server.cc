@@ -1,6 +1,8 @@
 #include <grpcpp/grpcpp.h>
 #include "protos/inference.grpc.pb.h"
+#include <thread>
 #include <memory>
+#include <vector>
 #include <string>
 
 using grpc::Server;
@@ -31,7 +33,7 @@ public:
     }
     else if (state_ == PROCESS)
     {
-      new CallData(service_, cq_); // accept next request
+      new CallData(service_, cq_); // re-arm immediately
 
       std::string out = "stub_output_size=" +
                         std::to_string(request_.input().size());
@@ -67,39 +69,54 @@ private:
 class AsyncServer
 {
 public:
-  void Run()
+  void Run(int num_threads)
   {
     std::string addr("0.0.0.0:50051");
 
     ServerBuilder builder;
     builder.AddListeningPort(addr, grpc::InsecureServerCredentials());
     builder.RegisterService(&service_);
-    cq_ = builder.AddCompletionQueue();
+
+    for (int i = 0; i < num_threads; ++i) {
+      cqs_.emplace_back(builder.AddCompletionQueue());  // One CQ per thread
+    }
+
     server_ = builder.BuildAndStart();
 
-    HandleRpcs();
+    for (int i = 0; i < num_threads; ++i) {
+      workers_.emplace_back(&AsyncServer::HandleRpcs, this, i);
+    }
+
+    for (auto& w : workers_) w.join();
   }
 
 private:
-  void HandleRpcs()
+  void HandleRpcs(int thread_idx)
   {
-    new CallData(&service_, cq_.get());
+    ServerCompletionQueue* cq = cqs_[thread_idx].get();
+
+    // Seed this thread's CQ with initial CallData
+    new CallData(&service_, cq);
+
     void *tag;
     bool ok;
 
-    while (cq_->Next(&tag, &ok))
+    while (cq->Next(&tag, &ok))
     {
-      static_cast<CallData *>(tag)->Proceed();
+      if (ok) {
+        static_cast<CallData *>(tag)->Proceed();
+      }
     }
   }
 
   InferenceService::AsyncService service_;
-  std::unique_ptr<ServerCompletionQueue> cq_;
+  std::vector<std::unique_ptr<ServerCompletionQueue>> cqs_; 
   std::unique_ptr<Server> server_;
+  std::vector<std::thread> workers_;
 };
 
 int main()
 {
   AsyncServer server;
-  server.Run();
+  server.Run(std::thread::hardware_concurrency());
 }

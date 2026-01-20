@@ -1,0 +1,162 @@
+==============================================
+     PERFORMANCE ANALYSIS REPORT
+==============================================
+Source: out.folded
+Generated: Mon Jan 19 02:43:19 PM IST 2026
+Total samples: 315698426524
+
+==============================================
+1. TOP 20 LEAF FUNCTIONS (where CPU actually spends time)
+==============================================
+
+         134  std::atomic<bool>::load
+          96  std::__is_constant_evaluated
+          93  absl::lts_20250512::Status::Status
+          89  grpc_core::BitSet<36ul, 16ul>::is_set
+          60  operator new
+          58  std::operator&
+          57  grpc_core::TraceFlag::enabled
+          47  decltype
+          42  absl::lts_20250512::Status::~Status
+          39  grpc_core::BitSet<36ul, 16ul>::mask_for
+          38  malloc
+          34  grpc_core::BitSet<36ul, 16ul>::unit_for
+          34  absl::lts_20250512::base_internal::SpinLock::TryLockInternal
+          33  absl::lts_20250512::synchronization_internal::(anonymous namespace)::PointerMap::Find
+          30  std::__uniq_ptr_impl<grpc_metadata_batch, grpc_core::Arena::PooledDeleter>::_M_ptr
+          30  _[i]
+          30  grpc_core::DebugLocation::DebugLocation
+          30  absl::lts_20250512::Status::Unref
+          29  absl::lts_20250512::Status::IsInlined
+          27  _int_free
+
+==============================================
+2. SUBSYSTEM BREAKDOWN
+==============================================
+
+epoll_wait (I/O):                   2888264728 (  0.9%)
+Debug lock graph:                  16060482736 (  5.1%)
+CQ polling (cq_next):              12048176069 (  3.8%)
+CallData lifecycle:                89881722486 ( 28.5%)
+Request handling:                  82053823589 ( 26.0%)
+Call destruction:                 109097837310 ( 34.5%)
+Lock operations:                   35221137816 ( 11.1%)
+Event engine threads:             200757801896 ( 63.6%)
+
+==============================================
+3. THREAD DISTRIBUTION
+==============================================
+
+Main server thread:               114940624628 ( 36.4%)
+Event engine threads:             200757801896 ( 63.6%)
+Other:                                       0 (  0.0%)
+
+==============================================
+4. TOP 15 HOT PATHS (by sample count)
+==============================================
+
+ 0.15%    464641718  AsyncServer::HandleRpcs -> CompletionQueue::AsyncNextInternal -> grpc_completion_queue_next -> cq_next
+ 0.12%    368353572  start_thread -> [libstdc++.so.6.0.33] -> AsyncServer::HandleRpcs -> CallData::Proceed
+ 0.10%    301944704  schedule -> __schedule -> psi_task_switch -> psi_group_change
+ 0.07%    230644060  start_thread -> [libstdc++.so.6.0.33] -> AsyncServer::HandleRpcs -> CompletionQueue::AsyncNextInternal
+ 0.07%    217281059  dequeue_task_fair -> dequeue_entities -> dequeue_entity -> update_curr
+ 0.06%    204927278  promise_filter_detail::CallDataFilterWithFlagsMethods<promise_filter_detail::CallData< -> promise_filter_detail::BaseCallDataMethods::DestructCallData -> promise_filter_detail::CallData< -> promise_filter_detail::ServerCallData::~ServerCallData
+ 0.06%    183916549  CondVar::WaitCommon -> Mutex::Trans -> Mutex::LockSlow -> Mutex::LockSlowWithDeadline
+ 0.05%    165632629  promise_filter_detail::ServerCallData::StartBatch -> promise_filter_detail::BaseCallData::Flusher::~Flusher -> grpc_call_next_op -> connected_channel_start_transport_stream_op_batch
+ 0.05%    163448068  gpr_cv_wait -> CondVar::Wait -> CondVar::WaitCommon -> Mutex::UnlockSlow
+ 0.05%    162035330  ServerInterface::BaseAsyncRequest::FinalizeResult -> ServerContextBase::BeginCompletionOp -> grpc_call_arena_alloc -> Arena::Alloc
+ 0.05%    158415693  dequeue_task_fair -> dequeue_entities -> dequeue_entity -> update_load_avg
+ 0.05%    156179591  task_non_contending -> hrtimer_start_range_ns -> enqueue_hrtimer -> timerqueue_add
+ 0.05%    155159235  synchronization_internal::FutexWaiter::Wait -> synchronization_internal::FutexWaiter::WaitUntil -> synchronization_internal::FutexImpl::Wait -> synchronization_internal::FutexImpl::WaitAbsoluteTimeout
+ 0.05%    145693300  CompletionQueue::AsyncNextInternal -> grpc_completion_queue_next -> cq_next -> gpr_atm_acq_cas
+ 0.05%    144200158  exec_ctx_run -> FilterStackCall::DestroyCall -> grpc_call_stack_destroy -> promise_filter_detail::CallDataFilterWithFlagsMethods<promise_filter_detail::CallData<
+
+==============================================
+5. EVENT ENGINE THREAD ANALYSIS (Top 10)
+==============================================
+
+    40648077 event_engine;[unknown];syscall;asm_sysvec_reschedule_ipi
+    27386869 event_engine;[unknown];synchronization_internal::FutexWaiter::Poke;syscall;entry_SYSCALL_64_safe_stack
+    40267507 std::variant<long, PosixError>::variant<PosixError const&, void, void, PosixError, void>;std::variant<long, PosixError>::variant<1ul, PosixError const&, PosixError, void>;std::__detail::__variant::_Variant_base<long, PosixError>::_Variant_base<1ul, PosixError const&>;__libc_recvmsg;entry_SYSCALL_64
+   116769873 WorkStealingThreadPool::ThreadState::Step;std::__shared_ptr_access<WorkStealingThreadPool::WorkStealingThreadPoolImpl, ;_[i];std::__shared_ptr_access<WorkStealingThreadPool::WorkStealingThreadPoolImpl, ;std::__shared_ptr<WorkStealingThreadPool::WorkStealingThreadPoolImpl, 
+    40774510 WorkStealingThreadPool::WorkStealingThreadPoolImpl::StartThread;WorkStealingThreadPool::ThreadState::ThreadBody;WorkStealingThreadPool::ThreadState::Step;std::__shared_ptr_access<WorkStealingThreadPool::WorkStealingThreadPoolImpl, ;_[i]
+    46098896 WorkStealingThreadPool::WorkStealingThreadPoolImpl::StartThread;WorkStealingThreadPool::ThreadState::ThreadBody;WorkStealingThreadPool::ThreadState::Step;WorkStealingThreadPool::WorkStealingThreadPoolImpl::IsForking;std::operator&
+    28592502 WorkStealingThreadPool::WorkStealingThreadPoolImpl::StartThread;WorkStealingThreadPool::ThreadState::ThreadBody;WorkStealingThreadPool::ThreadState::Step;WorkStealingThreadPool::WorkStealingThreadPoolImpl::IsForking;std::atomic<bool>::load
+    48012731 WorkStealingThreadPool::WorkStealingThreadPoolImpl::StartThread;WorkStealingThreadPool::ThreadState::ThreadBody;WorkStealingThreadPool::ThreadState::Step;WorkStealingThreadPool::WorkSignal::WaitWithTimeout;synchronization_internal::KernelTimeout::KernelTimeout
+    51413215 futex_wake;wake_up_q;try_to_wake_up;ttwu_queue_wakelist;llist_add_batch
+    29795605 enqueue_task;enqueue_task_fair;update_load_avg;sched_clock_cpu;sched_clock
+
+==============================================
+6. SERVER MAIN THREAD ANALYSIS (Top 10)
+==============================================
+
+   464641718 [libstdc++.so.6.0.33];AsyncServer::HandleRpcs;grpc::CompletionQueue::AsyncNextInternal;grpc_completion_queue_next;cq_next
+   368353572 clone3;start_thread;[libstdc++.so.6.0.33];AsyncServer::HandleRpcs;CallData::Proceed
+   301944704 futex_wait_queue;schedule;__schedule;psi_task_switch;psi_group_change
+   230644060 clone3;start_thread;[libstdc++.so.6.0.33];AsyncServer::HandleRpcs;grpc::CompletionQueue::AsyncNextInternal
+   217281059 dequeue_task;dequeue_task_fair;dequeue_entities;dequeue_entity;update_curr
+   204927278 grpc_call_stack_destroy;promise_filter_detail::CallDataFilterWithFlagsMethods<promise_filter_detail::CallData<;promise_filter_detail::BaseCallDataMethods::DestructCallData;promise_filter_detail::CallData<;promise_filter_detail::ServerCallData::~ServerCallData
+   183916549 CondVar::Wait;CondVar::WaitCommon;Mutex::Trans;Mutex::LockSlow;Mutex::LockSlowWithDeadline
+   165632629 promise_filter_detail::BaseCallDataMethods::StartTransportStreamOpBatch;promise_filter_detail::ServerCallData::StartBatch;promise_filter_detail::BaseCallData::Flusher::~Flusher;grpc_call_next_op;connected_channel_start_transport_stream_op_batch
+   163448068 begin_worker;gpr_cv_wait;CondVar::Wait;CondVar::WaitCommon;Mutex::UnlockSlow
+   162035330 grpc::CompletionQueue::AsyncNextInternal;grpc::ServerInterface::BaseAsyncRequest::FinalizeResult;grpc::ServerContextBase::BeginCompletionOp;grpc_call_arena_alloc;Arena::Alloc
+
+==============================================
+7. ADDITIONAL METRICS
+==============================================
+
+Syscall overhead:                  21232917758 ( 6.72%)
+SpinLock operations:                5717560353 ( 1.81%)
+Mutex operations:                  34960498558 (11.07%)
+Thread pool overhead:             200780158892 (63.59%)
+Arena allocations:                 86629073424 (27.44%)
+Memory operations:                  9246238996 ( 2.92%)
+
+==============================================
+8. COMPLETION QUEUE METRICS
+==============================================
+
+cq_next:                           12048176069 ( 3.81%)
+CQ Pop operations:                  1204461068 ( 0.38%)
+CQ Push operations:                 1510503806 ( 0.47%)
+Pollset work:                       8223779164 ( 2.60%)
+
+==============================================
+9. LOCK CONTENTION DETAIL
+==============================================
+
+Deadlock checking:                  8412637719 ( 2.66%)
+Lock graph tracking:                8196366713 ( 2.59%)
+Debug lock overhead:                7320879001 ( 2.31%)
+Futex operations:                  12341808208 ( 3.90%)
+
+==============================================
+10. NETWORK I/O METRICS
+==============================================
+
+sendmsg:                            3487871338 ( 1.10%)
+write:                                       0 ( 0.00%)
+read:                                        0 ( 0.00%)
+TCP operations:                    10335144078 ( 3.27%)
+
+==============================================
+11. RPC LIFECYCLE METRICS
+==============================================
+
+RPC creation:                       2277239164 ( 0.72%)
+RPC processing:                    89732611211 (28.42%)
+RPC completion:                    90379929200 (28.62%)
+RPC destruction:                   13398899629 ( 4.24%)
+
+==============================================
+12. STACK TRACE STATISTICS
+==============================================
+
+Total unique stack traces:     7794
+Server thread stacks:          2933
+Event engine stacks:           4861
+Stacks with [unknown]:         6
+
+==============================================
+END OF REPORT
+==============================================

@@ -7,7 +7,7 @@ $ make all
 
 3. build project
 ```bash
-$ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-DNDEBUG -O3 -fno-omit-frame-pointer" ..
+$ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-DNDEBUG -O3 -fno-omit-frame-pointer -march=native" ..
 $ cmake --build .
 ```
 4. run server
@@ -22,18 +22,10 @@ $ ghz   --proto inference.proto   --call inference.InferenceService/Predict   --
 
 Using Linux perf_events (aka "perf") to capture 60 seconds of 99 Hertz stack samples
 ```bash
-$ perf record -F 99 -p <server-process-id> -g -- sleep 60 --call-graph dwarf
-$ perf script > out.perf
-```
-then flamegraph
-```bash
 $ cd ~ && git clone git@github.com:brendangregg/FlameGraph.git
 
-cd back into dir where the out.perf is located
-
-$ ~/FlameGraph/stackcollapse-perf.pl out.perf > out.folded
-$ ~/FlameGraph/flamegraph.pl out.folded > kernel.svg
+$ cd perfs/ && sudo perf record -F 99 -g -p $(pgrep async_server) -- sleep 60
+$ perf script | ~/FlameGraph/stackcollapse-perf.pl > out.folded
+$ ./analyze_folded.sh out.folded report.txt
+$ ~/Flamegraph/flamegraph.pl out.folded > flame.svg
 ```
-# Results
-
-v1: Increasing the concurrency and rps increases latency tremendously, so need to think of multiple COs to handle the load and test again

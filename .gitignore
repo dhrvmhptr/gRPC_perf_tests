@@ -6,6 +6,8 @@ protos/
 
 compile_commands.json
 out.perf
+out.folded
+perf.data
 
 CMakeCache.txt
 CMakeFiles/
